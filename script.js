@@ -13,24 +13,47 @@ const formInputs = {
     brakeType: ''
 };
 
-// Captura de inputs
-document.getElementById('clientName').addEventListener('input', function() { formInputs.clientName = this.value; });
+// Máscara de Telefone
 document.getElementById('clientPhone').addEventListener('input', function(e) {
-    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-    e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-    formInputs.clientPhone = e.target.value;
-});
-
-document.getElementById('licensePlate').addEventListener('input', function(e) {
-    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (this.value.length > 3 && !this.value.includes('-')) {
-        this.value = this.value.slice(0, 3) + '-' + this.value.slice(3);
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    
+    let formatted = '';
+    if (value.length > 0) {
+        formatted = '(' + value.slice(0, 2);
+        if (value.length > 2) {
+            formatted += ') ' + value.slice(2, 7);
+            if (value.length > 7) {
+                formatted += '-' + value.slice(7, 11);
+            }
+        }
     }
-    formInputs.licensePlate = this.value;
+    e.target.value = formatted;
+    formInputs.clientPhone = formatted;
 });
 
-['brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
-    document.getElementById(id).addEventListener('input', function() { formInputs[id] = this.value; });
+// Máscara de Placa
+document.getElementById('licensePlate').addEventListener('input', function(e) {
+    let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (value.length > 7) value = value.slice(0, 7);
+    
+    if (value.length > 3) {
+        value = value.slice(0, 3) + '-' + value.slice(3);
+    }
+    this.value = value;
+    formInputs.licensePlate = value;
+});
+
+// Captura de inputs com conversão para maiúsculas onde necessário
+['clientName', 'brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function() {
+        let value = this.value;
+        if (['brand', 'model', 'displacement'].includes(id)) {
+            value = value.toUpperCase();
+            this.value = value;
+        }
+        formInputs[id] = value;
+    });
 });
 
 document.getElementById('brakeType').addEventListener('change', function() {
@@ -44,7 +67,7 @@ function openExternal(url) {
 }
 
 function nextStep(step) {
-    // Passo 1 agora é opcional, não bloqueia
+    // Passo 1 é opcional
     
     // Validação Passo 2
     if (currentStep === 2) {
@@ -161,7 +184,7 @@ function sendWhatsApp() {
     }
 
     if (formInputs.serviceTypes.includes('oil')) {
-        msg += `\n*PREFERÊNCIA DE ÓLEO:* ${formInputs.oilType}\n`;
+        msg += `\n*PREFERÊNCIA DE ÓLEO:* ${document.getElementById('oilType').value}\n`;
     }
 
     msg += `\n_Enviado via App Orçamento Inteligente_`;
