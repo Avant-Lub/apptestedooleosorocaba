@@ -9,14 +9,12 @@ const formInputs = {
     yearManufacture: '',
     yearModel: '',
     serviceTypes: [],
-    oilType: 'Indique-me a melhor opção'
+    oilType: 'Indique-me a melhor opção',
+    brakeType: ''
 };
 
-// Atualiza os inputs no objeto formInputs em tempo real
-document.getElementById('clientName').addEventListener('input', function() {
-    formInputs.clientName = this.value;
-});
-
+// Captura de inputs
+document.getElementById('clientName').addEventListener('input', function() { formInputs.clientName = this.value; });
 document.getElementById('clientPhone').addEventListener('input', function(e) {
     let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
     e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
@@ -29,35 +27,25 @@ document.getElementById('licensePlate').addEventListener('input', function(e) {
         this.value = this.value.slice(0, 3) + '-' + this.value.slice(3);
     }
     formInputs.licensePlate = this.value;
-    
-    const manualFields = ['brand', 'model', 'displacement', 'yearManufacture', 'yearModel'];
-    manualFields.forEach(id => {
-        const el = document.getElementById(id);
-        el.disabled = this.value.length >= 7;
-        el.style.opacity = this.value.length >= 7 ? '0.5' : '1';
-    });
 });
 
-// Captura campos manuais
 ['brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
-    document.getElementById(id).addEventListener('input', function() {
-        formInputs[id] = this.value;
-    });
+    document.getElementById(id).addEventListener('input', function() { formInputs[id] = this.value; });
 });
+
+document.getElementById('brakeType').addEventListener('change', function() {
+    formInputs.brakeType = this.value;
+});
+
+function openExternal(url) {
+    if (confirm("Você está saindo para um site externo (Carros na Web/Fipe). Estes sites podem conter anúncios. Deseja continuar?")) {
+        window.open(url, '_blank');
+    }
+}
 
 function nextStep(step) {
-    // Validação Passo 1
-    if (currentStep === 1) {
-        if (!formInputs.clientName || formInputs.clientName.trim().length < 3) {
-            showToast("Por favor, informe seu nome completo.");
-            return;
-        }
-        if (!formInputs.clientPhone || formInputs.clientPhone.length < 14) {
-            showToast("Informe um WhatsApp válido.");
-            return;
-        }
-    }
-
+    // Passo 1 agora é opcional, não bloqueia
+    
     // Validação Passo 2
     if (currentStep === 2) {
         const hasPlate = formInputs.licensePlate && formInputs.licensePlate.length >= 7;
@@ -97,6 +85,11 @@ function toggleService(el) {
         formInputs.serviceTypes = formInputs.serviceTypes.filter(s => s !== val);
     }
 
+    // Lógica de Freio Traseiro
+    document.getElementById('brakeTypeSection').style.display = 
+        formInputs.serviceTypes.includes('disco-traseiras') ? 'block' : 'none';
+
+    // Lógica de Óleo
     document.getElementById('oilPreference').style.display = 
         formInputs.serviceTypes.includes('oil') ? 'block' : 'none';
 }
@@ -113,8 +106,13 @@ function showSummary() {
         showToast("Selecione ao menos um serviço.");
         return;
     }
+    
+    if (formInputs.serviceTypes.includes('disco-traseiras') && !formInputs.brakeType) {
+        showToast("Por favor, informe o tipo de freio de mão.");
+        return;
+    }
 
-    document.getElementById('sumName').textContent = formInputs.clientName;
+    document.getElementById('sumName').textContent = formInputs.clientName || "Não informado";
     document.getElementById('sumVehicle').textContent = formInputs.licensePlate || (formInputs.brand + ' ' + formInputs.model);
     
     const serviceMap = {
@@ -141,8 +139,8 @@ function sendWhatsApp() {
     };
 
     let msg = `🚗 *NOVO ORÇAMENTO - Do Óleo Sorocaba*\n\n`;
-    msg += `👤 *Cliente:* ${formInputs.clientName}\n`;
-    msg += `📱 *WhatsApp:* ${formInputs.clientPhone}\n\n`;
+    msg += `👤 *Cliente:* ${formInputs.clientName || 'Não informado'}\n`;
+    msg += `📱 *WhatsApp:* ${formInputs.clientPhone || 'Não informado'}\n\n`;
     
     msg += `*VEÍCULO:*\n`;
     if (formInputs.licensePlate) {
@@ -158,8 +156,12 @@ function sendWhatsApp() {
         msg += `✅ ${serviceMap[s]}\n`;
     });
 
+    if (formInputs.serviceTypes.includes('disco-traseiras')) {
+        msg += `• Freio de Mão: ${formInputs.brakeType}\n`;
+    }
+
     if (formInputs.serviceTypes.includes('oil')) {
-        msg += `\n*PREFERÊNCIA DE ÓLEO:* ${document.getElementById('oilType').value}\n`;
+        msg += `\n*PREFERÊNCIA DE ÓLEO:* ${formInputs.oilType}\n`;
     }
 
     msg += `\n_Enviado via App Orçamento Inteligente_`;

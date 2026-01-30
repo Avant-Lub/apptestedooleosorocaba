@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a3a52">
+    <title>Do Óleo Sorocaba - Orçamento Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="logo-wrapper">
+                <img src="https://dooleosorocaba.com.br/wp-content/uploads/2023/05/logo-do-oleo-sorocaba.png" alt="Do Óleo Sorocaba" class="logo">
+            </div>
+            <div class="header-title">Orçamento Rápido</div>
+            <div class="header-badges">
+                <span class="badge"><i class="fas fa-check-circle"></i> Especialistas</span>
+                <span class="badge"><i class="fas fa-clock"></i> Resposta em minutos</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Progresso -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-labels">
+                <span>Início</span>
+                <span>Veículo</span>
+                <span>Serviços</span>
+                <span>Finalizar</span>
+            </div>
+        </div>
+
+        <!-- Passo 1: Identificação (DADOS OPCIONAIS) -->
+        <div class="card active" id="step1">
+            <div class="card-title"><i class="fas fa-user"></i> Seus Dados (Opcional)</div>
+            <div class="form-group">
+                <label for="clientName">Como podemos te chamar?</label>
+                <input type="text" id="clientName" placeholder="Seu nome completo" maxlength="40">
+            </div>
+            <div class="form-group">
+                <label for="clientPhone">WhatsApp para contato</label>
+                <input type="tel" id="clientPhone" placeholder="(15) 99999-9999">
+                <div class="input-hint">Opcional, mas ajuda no retorno.</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="nextStep(2)">Próximo <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Passo 2: Veículo -->
+        <div class="card" id="step2">
+            <div class="card-title"><i class="fas fa-car"></i> Sobre o Veículo</div>
+            
+            <!-- Links Externos -->
+            <div class="external-links">
+                <button class="btn-link" onclick="openExternal('https://www.carrosnaweb.com.br')"><i class="fas fa-search"></i> Carros na Web</button>
+                <button class="btn-link" onclick="openExternal('https://veiculos.fipe.org.br')"><i class="fas fa-table"></i> Tabela Fipe</button>
+            </div>
+
+            <div class="form-group">
+                <label for="licensePlate">Placa do Veículo</label>
+                <input type="text" id="licensePlate" placeholder="ABC-1234" maxlength="8">
+            </div>
+            
+            <div id="manualVehicleFields">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="brand" placeholder="Ex: Toyota">
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="model" placeholder="Ex: Corolla">
+                </div>
+                <div class="form-group">
+                    <label>Motorização</label>
+                    <input type="text" id="displacement" placeholder="Ex: 2.0 16V">
+                </div>
+                <div class="options-grid">
+                    <div class="form-group">
+                        <label>Ano Fab.</label>
+                        <input type="text" id="yearManufacture" placeholder="2020" maxlength="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Ano Mod.</label>
+                        <input type="text" id="yearModel" placeholder="2021" maxlength="4">
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <button class="btn btn-primary" onclick="nextStep(3)">Próximo <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Passo 3: Serviços -->
+        <div class="card" id="step3">
+            <div class="card-title"><i class="fas fa-tools"></i> O que você precisa?</div>
+            <div class="options-grid" id="servicesGrid">
+                <div class="option-card" data-value="oil" onclick="toggleService(this)">
+                    <i class="fas fa-oil-can"></i>
+                    <span>Óleo e Filtros</span>
+                </div>
+                <div class="option-card" data-value="transmission" onclick="toggleService(this)">
+                    <i class="fas fa-cogs"></i>
+                    <span>Câmbio Automático</span>
+                </div>
+                <div class="option-card" data-value="arrefecimento" onclick="toggleService(this)">
+                    <i class="fas fa-thermometer-half"></i>
+                    <span>Arrefecimento</span>
+                </div>
+                <div class="option-card" data-value="disco-dianteiras" onclick="toggleService(this)">
+                    <i class="fas fa-circle-notch"></i>
+                    <span>Freios Dianteiros</span>
+                </div>
+                <div class="option-card" data-value="disco-traseiras" onclick="toggleService(this)">
+                    <i class="fas fa-circle-notch"></i>
+                    <span>Freios Traseiros</span>
+                </div>
+                <div class="option-card" data-value="bieletas-dianteiras" onclick="toggleService(this)">
+                    <i class="fas fa-link"></i>
+                    <span>Bieletas</span>
+                </div>
+            </div>
+
+            <!-- Lógica de Freio Traseiro -->
+            <div id="brakeTypeSection" style="display: none; margin-top: 1.5rem;">
+                <label>Tipo de Freio de Mão</label>
+                <select id="brakeType">
+                    <option value="">Selecione o tipo...</option>
+                    <option value="Manual">Manual (Alavanca)</option>
+                    <option value="Eletrônico">Eletrônico (Botão)</option>
+                </select>
+            </div>
+
+            <div id="oilPreference" style="display: none; margin-top: 1.5rem;">
+                <label>Preferência de Óleo</label>
+                <select id="oilType">
+                    <option value="Indique-me a melhor opção">Indique-me a melhor opção</option>
+                    <option value="synthetic">Sintético</option>
+                    <option value="semi">Semissintético</option>
+                    <option value="mineral">Mineral</option>
+                </select>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <button class="btn btn-primary" onclick="showSummary()">Revisar <i class="fas fa-check"></i></button>
+            </div>
+        </div>
+
+        <!-- Seção Conecte-se e Mapa -->
+        <section class="social-section">
+            <h3>Conecte-se com a Do Óleo Sorocaba</h3>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/dooleosorocaba" target="_blank" class="social-icon inst"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/dooleosorocaba" target="_blank" class="social-icon face"><i class="fab fa-facebook"></i></a>
+                <a href="https://dooleosorocaba.com.br" target="_blank" class="social-icon web"><i class="fas fa-globe"></i></a>
+                <a href="https://wa.me/5515998473981" target="_blank" class="social-icon whats"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m13!1m12!1m3!1d3659.123456789!2d-47.456789!3d-23.456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c5f5f5f5f5f5f5%3A0x5f5f5f5f5f5f5f5f!2sRua%20Comendador%20Hermelino%20Matarazzo%2C%20287%20-%20Vila%20Santana%2C%20Sorocaba%20-%20SP%2C%2018080-000!5e0!3m2!1spt-BR!2sbr!4v1234567890" width="100%" height="200" style="border:0; border-radius: 12px;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal de Resumo -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="card-title" style="justify-content: center;"><i class="fas fa-clipboard-list"></i> Resumo do Pedido</div>
+            <div id="summaryContent">
+                <div class="summary-item"><span class="summary-label">Cliente:</span> <span class="summary-value" id="sumName">-</span></div>
+                <div class="summary-item"><span class="summary-label">Veículo:</span> <span class="summary-value" id="sumVehicle">-</span></div>
+                <div class="summary-item"><span class="summary-label">Serviços:</span> <span class="summary-value" id="sumServices">-</span></div>
+            </div>
+            <button class="btn btn-whatsapp" onclick="sendWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Enviar para WhatsApp
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="closeModal()">Ajustar algo</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
