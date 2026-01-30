@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a3a52">
+    <title>Do Óleo Sorocaba - Orçamento Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <!-- Logo corrigido com fallback para texto caso a imagem falhe -->
+            <div class="logo-wrapper">
+                <img src="https://dooleosorocaba.com.br/wp-content/uploads/2023/05/logo-do-oleo-sorocaba.png" alt="Do Óleo Sorocaba" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <h1 class="logo-fallback" style="display:none; font-family:'Poppins'; color:white;">DO ÓLEO</h1>
+            </div>
+            <div class="header-title">Orçamento Rápido</div>
+            <div class="header-badges">
+                <span class="badge"><i class="fas fa-check-circle"></i> Especialistas</span>
+                <span class="badge"><i class="fas fa-clock"></i> Resposta em minutos</span>
+                <span class="badge"><i class="fas fa-shield-alt"></i> Garantia</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Progresso -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-labels">
+                <span>Início</span>
+                <span>Veículo</span>
+                <span>Serviços</span>
+                <span>Finalizar</span>
+            </div>
+        </div>
+
+        <!-- Passo 1: Identificação -->
+        <div class="card active" id="step1">
+            <div class="card-title"><i class="fas fa-user"></i> Seus Dados</div>
+            <div class="form-group">
+                <label for="clientName">Como podemos te chamar?</label>
+                <input type="text" id="clientName" placeholder="Seu nome completo" maxlength="40">
+            </div>
+            <div class="form-group">
+                <label for="clientPhone">WhatsApp para contato</label>
+                <input type="tel" id="clientPhone" placeholder="(15) 99999-9999">
+                <div class="input-hint">Enviaremos o orçamento por aqui.</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" onclick="nextStep(2)">Próximo <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Passo 2: Veículo -->
+        <div class="card" id="step2">
+            <div class="card-title"><i class="fas fa-car"></i> Sobre o Veículo</div>
+            <div class="form-group">
+                <label for="licensePlate">Placa do Veículo</label>
+                <input type="text" id="licensePlate" placeholder="ABC-1234 ou ABC1D23" maxlength="8">
+                <div class="input-hint">Com a placa, identificamos o modelo automaticamente.</div>
+            </div>
+            
+            <div id="manualVehicleFields">
+                <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.8rem;">OU PREENCHA MANUALMENTE</div>
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="brand" placeholder="Ex: Toyota">
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="model" placeholder="Ex: Corolla">
+                </div>
+                <div class="form-group">
+                    <label>Motorização</label>
+                    <input type="text" id="displacement" placeholder="Ex: 2.0 16V">
+                </div>
+                <div class="options-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="form-group">
+                        <label>Ano Fab.</label>
+                        <input type="text" id="yearManufacture" placeholder="2020" maxlength="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Ano Mod.</label>
+                        <input type="text" id="yearModel" placeholder="2021" maxlength="4">
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <button class="btn btn-primary" onclick="nextStep(3)">Próximo <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Passo 3: Serviços -->
+        <div class="card" id="step3">
+            <div class="card-title"><i class="fas fa-tools"></i> O que você precisa?</div>
+            <div class="options-grid" id="servicesGrid">
+                <div class="option-card" data-value="oil" onclick="toggleService(this)">
+                    <i class="fas fa-oil-can"></i>
+                    <span>Óleo e Filtros</span>
+                </div>
+                <div class="option-card" data-value="transmission" onclick="toggleService(this)">
+                    <i class="fas fa-cogs"></i>
+                    <span>Câmbio Automático</span>
+                </div>
+                <div class="option-card" data-value="arrefecimento" onclick="toggleService(this)">
+                    <i class="fas fa-thermometer-half"></i>
+                    <span>Arrefecimento</span>
+                </div>
+                <div class="option-card" data-value="disco-dianteiras" onclick="toggleService(this)">
+                    <i class="fas fa-circle-notch"></i>
+                    <span>Freios Dianteiros</span>
+                </div>
+                <div class="option-card" data-value="disco-traseiras" onclick="toggleService(this)">
+                    <i class="fas fa-circle-notch"></i>
+                    <span>Freios Traseiros</span>
+                </div>
+                <div class="option-card" data-value="bieletas-dianteiras" onclick="toggleService(this)">
+                    <i class="fas fa-link"></i>
+                    <span>Bieletas</span>
+                </div>
+            </div>
+
+            <div id="oilPreference" style="display: none; margin-top: 1.5rem;">
+                <label>Preferência de Óleo</label>
+                <select id="oilType">
+                    <option value="Indique-me a melhor opção">Indique-me a melhor opção (Recomendado)</option>
+                    <option value="synthetic">Sintético</option>
+                    <option value="semi">Semissintético</option>
+                    <option value="mineral">Mineral</option>
+                </select>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <button class="btn btn-primary" onclick="showSummary()">Revisar <i class="fas fa-check"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resumo -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="card-title" style="justify-content: center;"><i class="fas fa-clipboard-list"></i> Resumo do Pedido</div>
+            <div id="summaryContent">
+                <div class="summary-item"><span class="summary-label">Cliente:</span> <span class="summary-value" id="sumName">-</span></div>
+                <div class="summary-item"><span class="summary-label">Veículo:</span> <span class="summary-value" id="sumVehicle">-</span></div>
+                <div class="summary-item"><span class="summary-label">Serviços:</span> <span class="summary-value" id="sumServices">-</span></div>
+            </div>
+            <button class="btn btn-whatsapp" onclick="sendWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Enviar para WhatsApp
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 0.5rem;" onclick="closeModal()">Ajustar algo</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
