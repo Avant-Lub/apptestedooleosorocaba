@@ -14,11 +14,11 @@ const formInputs = {
 };
 
 // --- CONFIGURAÇÃO APIBRASIL ---
-const CHANNEL_NAME = "SEU_CHANNEL_NAME"; // Substitua pelo seu Channel Name
-const BEARER_TOKEN = "SEU_TOKEN_BEARER"; // Substitua pelo seu Bearer Token
+const CHANNEL_NAME = "SEU_CHANNEL_NAME"; 
+const BEARER_TOKEN = "SEU_TOKEN_BEARER"; 
 // ------------------------------
 
-let isPlateValid = false; // Trava de segurança para a placa
+let isPlateValid = false; 
 
 // Máscara de Telefone
 document.getElementById('clientPhone').addEventListener('input', function(e) {
@@ -44,7 +44,6 @@ document.getElementById('licensePlate').addEventListener('input', async function
     let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (value.length > 7) value = value.slice(0, 7);
     
-    // Formatação Visual
     let displayValue = value;
     if (value.length > 3) {
         const isOldPlate = value.length >= 5 && !isNaN(value[4]);
@@ -56,29 +55,31 @@ document.getElementById('licensePlate').addEventListener('input', async function
     this.value = displayValue;
     formInputs.licensePlate = value;
     
-    // Reset da validação ao digitar
     isPlateValid = false;
     updatePlateStatus("", "");
+    
+    // Se a placa for apagada ou alterada, mostra os campos manuais novamente
+    toggleManualFields(true);
 
     if (value.length === 7) {
         await validarEConsultarPlaca(value);
     }
 });
 
+function toggleManualFields(show) {
+    const manualFields = document.getElementById('manualVehicleFields');
+    manualFields.style.display = show ? 'block' : 'none';
+}
+
 function updatePlateStatus(msg, color) {
     const statusDiv = document.getElementById('plateStatus');
     const plateInput = document.getElementById('licensePlate');
     statusDiv.textContent = msg;
     statusDiv.style.color = color;
-    if (color) {
-        plateInput.style.borderColor = color;
-    } else {
-        plateInput.style.borderColor = "#ddd";
-    }
+    plateInput.style.borderColor = color || "#ddd";
 }
 
 async function validarEConsultarPlaca(placa) {
-    // Regex para Placa Antiga (AAA-9999) e Mercosul (AAA1A11)
     const regexAntiga = /^[A-Z]{3}[0-9]{4}$/;
     const regexMercosul = /^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$/;
 
@@ -88,8 +89,7 @@ async function validarEConsultarPlaca(placa) {
         return;
     }
 
-    updatePlateStatus("Consultando veículo...", "#007bff");
-    showToast("Buscando dados na base nacional...");
+    updatePlateStatus("Consultando...", "#007bff");
 
     try {
         const response = await fetch(`https://api.brasilaberto.net/v1/vehicles/${placa}`, {
@@ -121,16 +121,17 @@ async function validarEConsultarPlaca(placa) {
 
             updatePlateStatus("Veículo identificado!", "#28a745");
             isPlateValid = true;
-            showToast("Dados carregados com sucesso!");
+            toggleManualFields(false); // Oculta campos se deu certo
         } else {
-            updatePlateStatus("Veículo não encontrado!", "#dc3545");
+            // Consulta Silenciosa: Não informa erro, apenas mantém campos manuais
+            updatePlateStatus("", "");
             isPlateValid = false;
-            showToast("Placa não encontrada. Verifique os dados.");
+            toggleManualFields(true);
         }
     } catch (error) {
-        updatePlateStatus("Erro na conexão!", "#dc3545");
+        updatePlateStatus("", "");
         isPlateValid = false;
-        showToast("Erro ao conectar com o servidor.");
+        toggleManualFields(true);
     }
 }
 
@@ -151,20 +152,23 @@ document.getElementById('brakeType').addEventListener('change', function() {
 });
 
 function openExternal(url) {
-    if (confirm("Você está saindo para um site externo. Deseja continuar?")) {
-        window.open(url, '_blank');
-    }
+    window.open(url, '_blank');
 }
 
 function nextStep(step) {
     if (currentStep === 2) {
-        // Se tentou avançar sem placa válida
+        const plateValue = formInputs.licensePlate;
+        
+        // Se tem algo na placa mas não é válido (7 chars + formato)
+        if (plateValue.length > 0 && !isPlateValid) {
+            showToast("Por favor, insira uma placa válida.");
+            return;
+        }
+
+        // Se a placa não foi preenchida ou não foi encontrada, exige Marca e Modelo
         if (!isPlateValid) {
-            // Se os campos manuais estiverem preenchidos, permite (caso a API falhe mas o usuário saiba os dados)
-            const hasManual = formInputs.brand && formInputs.model;
-            if (!hasManual) {
-                showToast("Por favor, insira uma placa válida ou preencha os dados do veículo.");
-                updatePlateStatus("Ação necessária: Placa válida ou dados manuais", "#dc3545");
+            if (!formInputs.brand || !formInputs.model) {
+                showToast("Informe a Marca e o Modelo do veículo.");
                 return;
             }
         }
