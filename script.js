@@ -13,11 +13,6 @@ const formInputs = {
     brakeType: ''
 };
 
-// --- CONFIGURAÇÃO APIBRASIL ---
-const CHANNEL_NAME = "SEU_CHANNEL_NAME"; // Substitua pelo seu Channel Name
-const BEARER_TOKEN = "SEU_TOKEN_BEARER"; // Substitua pelo seu Bearer Token
-// ------------------------------
-
 // Máscara de Telefone
 document.getElementById('clientPhone').addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
@@ -37,81 +32,17 @@ document.getElementById('clientPhone').addEventListener('input', function(e) {
     formInputs.clientPhone = formatted;
 });
 
-// Máscara de Placa e Consulta Automática
-document.getElementById('licensePlate').addEventListener('input', async function(e) {
+// Máscara de Placa
+document.getElementById('licensePlate').addEventListener('input', function(e) {
     let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (value.length > 7) value = value.slice(0, 7);
     
-    // Formatação Visual (ABC-1234 ou ABC1D23)
-    let displayValue = value;
     if (value.length > 3) {
-        // Se o 5º caractere for número, é placa antiga (formata com hífen)
-        // Se for letra, é Mercosul (não costuma usar hífen, mas vamos manter a lógica de 3-4)
-        const isOldPlate = value.length >= 5 && !isNaN(value[4]);
-        if (isOldPlate) {
-            displayValue = value.slice(0, 3) + '-' + value.slice(3);
-        }
+        value = value.slice(0, 3) + '-' + value.slice(3);
     }
-    
-    this.value = displayValue;
-    formInputs.licensePlate = value; // Guardamos a placa limpa para a API
-
-    // Se a placa estiver completa (7 caracteres), consulta a API
-    if (value.length === 7) {
-        await consultarPlaca(value);
-    }
+    this.value = value;
+    formInputs.licensePlate = value;
 });
-
-async function consultarPlaca(placa) {
-    const plateInput = document.getElementById('licensePlate');
-    const manualFields = document.getElementById('manualVehicleFields');
-    
-    // Feedback visual de carregamento
-    plateInput.style.borderColor = '#007bff';
-    showToast("Consultando dados do veículo...");
-
-    const url = `https://api.brasilaberto.net/v1/vehicles/${placa}`;
-
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Channel-Name': CHANNEL_NAME,
-                'Authorization': `Bearer ${BEARER_TOKEN}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.result) {
-            const v = data.result;
-            
-            // Preenche os campos
-            document.getElementById('brand').value = v.brand || '';
-            document.getElementById('model').value = v.model || '';
-            document.getElementById('displacement').value = v.engine || '';
-            document.getElementById('yearManufacture').value = v.yearManufacture || '';
-            document.getElementById('yearModel').value = v.yearModel || '';
-
-            // Atualiza o objeto formInputs
-            formInputs.brand = v.brand || '';
-            formInputs.model = v.model || '';
-            formInputs.displacement = v.engine || '';
-            formInputs.yearManufacture = v.yearManufacture || '';
-            formInputs.yearModel = v.yearModel || '';
-
-            plateInput.style.borderColor = '#28a745'; // Verde para sucesso
-            showToast("Veículo identificado com sucesso!");
-        } else {
-            plateInput.style.borderColor = '#dc3545'; // Vermelho para erro
-            showToast("Placa não encontrada. Preencha manualmente.");
-        }
-    } catch (error) {
-        console.error('Erro na consulta:', error);
-        plateInput.style.borderColor = '#dc3545';
-        showToast("Erro ao consultar placa. Preencha manualmente.");
-    }
-}
 
 // Captura de inputs com conversão para maiúsculas onde necessário
 ['clientName', 'brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
@@ -136,6 +67,8 @@ function openExternal(url) {
 }
 
 function nextStep(step) {
+    // Passo 1 é opcional
+    
     // Validação Passo 2
     if (currentStep === 2) {
         const hasPlate = formInputs.licensePlate && formInputs.licensePlate.length >= 7;
@@ -188,11 +121,7 @@ function showToast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.style.display = 'block';
-    t.style.opacity = '1';
-    setTimeout(() => {
-        t.style.opacity = '0';
-        setTimeout(() => t.style.display = 'none', 500);
-    }, 3000);
+    setTimeout(() => t.style.display = 'none', 3000);
 }
 
 function showSummary() {
@@ -207,11 +136,7 @@ function showSummary() {
     }
 
     document.getElementById('sumName').textContent = formInputs.clientName || "Não informado";
-    
-    // Formata o texto do veículo no resumo
-    let vehicleText = formInputs.licensePlate ? `[${formInputs.licensePlate}] ` : "";
-    vehicleText += `${formInputs.brand} ${formInputs.model}`;
-    document.getElementById('sumVehicle').textContent = vehicleText || "Não informado";
+    document.getElementById('sumVehicle').textContent = formInputs.licensePlate || (formInputs.brand + ' ' + formInputs.model);
     
     const serviceMap = {
         oil: 'Óleo', transmission: 'Câmbio', arrefecimento: 'Arrefecimento',
@@ -241,10 +166,13 @@ function sendWhatsApp() {
     msg += `📱 *WhatsApp:* ${formInputs.clientPhone || 'Não informado'}\n\n`;
     
     msg += `*VEÍCULO:*\n`;
-    msg += `• Placa: ${formInputs.licensePlate || 'Não informada'}\n`;
-    msg += `• Marca/Mod: ${formInputs.brand} ${formInputs.model}\n`;
-    msg += `• Motor: ${formInputs.displacement || 'N/A'}\n`;
-    msg += `• Ano: ${formInputs.yearManufacture || ''}/${formInputs.yearModel || ''}\n`;
+    if (formInputs.licensePlate) {
+        msg += `• Placa: ${formInputs.licensePlate}\n`;
+    } else {
+        msg += `• ${formInputs.brand} ${formInputs.model}\n`;
+        msg += `• Motor: ${formInputs.displacement}\n`;
+        msg += `• Ano: ${formInputs.yearManufacture}/${formInputs.yearModel}\n`;
+    }
 
     msg += `\n*SERVIÇOS:* \n`;
     formInputs.serviceTypes.forEach(s => {
