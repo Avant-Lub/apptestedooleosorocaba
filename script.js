@@ -86,7 +86,7 @@ async function consultarPlaca(placa) {
 
     if (!regexAntiga.test(placa) && !regexMercosul.test(placa)) {
         updatePlateStatus("Formato de placa inválido!", "#dc3545");
-        toggleManualFields(true); // Se o formato tá errado, pede manual
+        toggleManualFields(true); 
         return;
     }
 
@@ -119,10 +119,8 @@ async function consultarPlaca(placa) {
             formInputs.yearModel = v.yearModel || '';
 
             updatePlateStatus("Veículo identificado!", "#28a745");
-            toggleManualFields(false); // Encontrou, mantém oculto
+            toggleManualFields(false); 
         } else {
-            // Silencioso: Não encontrou na API, mas a placa é válida em formato.
-            // Mantém oculto conforme solicitado (dados manuais só se não informar placa)
             updatePlateStatus("Placa informada", "#28a745");
             toggleManualFields(false);
         }
@@ -149,7 +147,9 @@ document.getElementById('brakeType').addEventListener('change', function() {
 });
 
 function openExternal(url) {
-    window.open(url, '_blank');
+    if (confirm("Você está saindo para um site externo que pode conter anúncios. Deseja continuar?")) {
+        window.open(url, '_blank');
+    }
 }
 
 function nextStep(step) {
@@ -158,15 +158,12 @@ function nextStep(step) {
         const regexAntiga = /^[A-Z]{3}[0-9]{4}$/;
         const regexMercosul = /^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$/;
 
-        // CASO 1: Usuário informou uma placa
         if (plateValue.length > 0) {
             if (plateValue.length < 7 || (!regexAntiga.test(plateValue) && !regexMercosul.test(plateValue))) {
                 showToast("Por favor, insira uma placa válida ou apague-a para preencher manualmente.");
                 return;
             }
-            // Se a placa é válida, permite passar (mesmo sem dados da API, pois a placa é soberana)
         } 
-        // CASO 2: Usuário NÃO informou placa
         else {
             if (!formInputs.brand || !formInputs.model) {
                 showToast("Por favor, informe a Marca e o Modelo do veículo.");
