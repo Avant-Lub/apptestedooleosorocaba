@@ -18,8 +18,6 @@ const CHANNEL_NAME = "SEU_CHANNEL_NAME";
 const BEARER_TOKEN = "SEU_TOKEN_BEARER"; 
 // ------------------------------
 
-let isPlateValid = false; 
-
 // Máscara de Telefone
 document.getElementById('clientPhone').addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
@@ -55,14 +53,17 @@ document.getElementById('licensePlate').addEventListener('input', async function
     this.value = displayValue;
     formInputs.licensePlate = value;
     
-    isPlateValid = false;
     updatePlateStatus("", "");
-    
-    // Se a placa for apagada ou alterada, mostra os campos manuais novamente
-    toggleManualFields(true);
+
+    // Lógica de Visibilidade: Se não tem placa, mostra campos manuais. Se tem algo, oculta até validar.
+    if (value.length === 0) {
+        toggleManualFields(true);
+    } else {
+        toggleManualFields(false);
+    }
 
     if (value.length === 7) {
-        await validarEConsultarPlaca(value);
+        await consultarPlaca(value);
     }
 });
 
@@ -79,13 +80,13 @@ function updatePlateStatus(msg, color) {
     plateInput.style.borderColor = color || "#ddd";
 }
 
-async function validarEConsultarPlaca(placa) {
+async function consultarPlaca(placa) {
     const regexAntiga = /^[A-Z]{3}[0-9]{4}$/;
     const regexMercosul = /^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$/;
 
     if (!regexAntiga.test(placa) && !regexMercosul.test(placa)) {
         updatePlateStatus("Formato de placa inválido!", "#dc3545");
-        isPlateValid = false;
+        toggleManualFields(true); // Se o formato tá errado, pede manual
         return;
     }
 
@@ -105,14 +106,12 @@ async function validarEConsultarPlaca(placa) {
         if (response.ok && data.result) {
             const v = data.result;
             
-            // Preenche campos
             document.getElementById('brand').value = v.brand || '';
             document.getElementById('model').value = v.model || '';
             document.getElementById('displacement').value = v.engine || '';
             document.getElementById('yearManufacture').value = v.yearManufacture || '';
             document.getElementById('yearModel').value = v.yearModel || '';
 
-            // Atualiza objeto
             formInputs.brand = v.brand || '';
             formInputs.model = v.model || '';
             formInputs.displacement = v.engine || '';
@@ -120,18 +119,16 @@ async function validarEConsultarPlaca(placa) {
             formInputs.yearModel = v.yearModel || '';
 
             updatePlateStatus("Veículo identificado!", "#28a745");
-            isPlateValid = true;
-            toggleManualFields(false); // Oculta campos se deu certo
+            toggleManualFields(false); // Encontrou, mantém oculto
         } else {
-            // Consulta Silenciosa: Não informa erro, apenas mantém campos manuais
-            updatePlateStatus("", "");
-            isPlateValid = false;
-            toggleManualFields(true);
+            // Silencioso: Não encontrou na API, mas a placa é válida em formato.
+            // Mantém oculto conforme solicitado (dados manuais só se não informar placa)
+            updatePlateStatus("Placa informada", "#28a745");
+            toggleManualFields(false);
         }
     } catch (error) {
-        updatePlateStatus("", "");
-        isPlateValid = false;
-        toggleManualFields(true);
+        updatePlateStatus("Placa informada", "#28a745");
+        toggleManualFields(false);
     }
 }
 
@@ -158,17 +155,21 @@ function openExternal(url) {
 function nextStep(step) {
     if (currentStep === 2) {
         const plateValue = formInputs.licensePlate;
-        
-        // Se tem algo na placa mas não é válido (7 chars + formato)
-        if (plateValue.length > 0 && !isPlateValid) {
-            showToast("Por favor, insira uma placa válida.");
-            return;
-        }
+        const regexAntiga = /^[A-Z]{3}[0-9]{4}$/;
+        const regexMercosul = /^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$/;
 
-        // Se a placa não foi preenchida ou não foi encontrada, exige Marca e Modelo
-        if (!isPlateValid) {
+        // CASO 1: Usuário informou uma placa
+        if (plateValue.length > 0) {
+            if (plateValue.length < 7 || (!regexAntiga.test(plateValue) && !regexMercosul.test(plateValue))) {
+                showToast("Por favor, insira uma placa válida ou apague-a para preencher manualmente.");
+                return;
+            }
+            // Se a placa é válida, permite passar (mesmo sem dados da API, pois a placa é soberana)
+        } 
+        // CASO 2: Usuário NÃO informou placa
+        else {
             if (!formInputs.brand || !formInputs.model) {
-                showToast("Informe a Marca e o Modelo do veículo.");
+                showToast("Por favor, informe a Marca e o Modelo do veículo.");
                 return;
             }
         }
