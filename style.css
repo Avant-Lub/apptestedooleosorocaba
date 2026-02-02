@@ -34,16 +34,56 @@ header {
     align-items: center;
     gap: 0.5rem;
 }
+/* Adicione isso ao seu style.css */
 .frase-destaque {
-    background-color: black;
-    color: gold;
-    padding: 25px;
-    font-size: 32px;
-    font-weight: bold;
+    background-color: #000000;
+    color: #FFD700;
+    padding: 25px 30px;
+    font-size: 2.5rem;
+    font-weight: 800;
     text-align: center;
     border-radius: 12px;
-    margin: 30px 0;
-    border: 3px solid gold;
+    margin: 20px 0 30px 0;
+    border: 3px solid #FFD700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    
+    /* Efeito de sombra para destaque */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 215, 0, 0.2);
+    
+    /* Transição suave para hover */
+    transition: all 0.3s ease;
+}
+
+.frase-destaque:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4),
+                0 0 25px rgba(255, 215, 0, 0.3);
+}
+
+.frase-destaque h2 {
+    margin: 0;
+    padding: 0;
+}
+
+/* Para responsividade */
+@media (max-width: 768px) {
+    .frase-destaque {
+        font-size: 1.8rem;
+        padding: 20px;
+        margin: 15px 0 25px 0;
+        letter-spacing: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .frase-destaque {
+        font-size: 1.5rem;
+        padding: 15px;
+        margin: 10px 0 20px 0;
+    }
 }
 .header-top {
     width: 100%;
