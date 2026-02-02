@@ -115,6 +115,12 @@ header {
     cursor: pointer;
     transition: all 0.2s;
 }
+/* Adicione ao seu style.css */
+.summary-value {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
 
 .share-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.1); }
 
