@@ -115,6 +115,13 @@ function validateYears() {
     }
     return true;
 }
+// Sempre que atualizar os valores
+//function atualizarResumoDados() {
+    // Supondo que você tenha essas variáveis
+ //   document.getElementById('sumName').textContent = nomeCliente.toUpperCase();
+//    document.getElementById('sumVehicle').textContent = modeloVeiculo.toUpperCase();
+//    document.getElementById('sumServices').textContent = servicosSelecionados.toUpperCase();
+// }
 
 function nextStep(step) {
     if (currentStep === 2) {
@@ -203,6 +210,20 @@ function resetApp() {
     updateProgress();
     closeModal();
 }
+
+function atualizarResumoDados() {
+    // Supondo que você tenha essas variáveis
+    document.getElementById('sumName').textContent = function atualizarResumoDados() {
+    // Supondo que você tenha essas variáveis
+    document.getElementById('sumName').textContent = clientname.toUpperCase();
+  //  document.getElementById('sumVehicle').textContent = modeloVeiculo.toUpperCase();
+  //  document.getElementById('sumServices').textContent = servicosSelecionados.toUpperCase();
+}
+lientname.toUpperCase();
+    document.getElementById('sumVehicle').textContent = modeloVeiculo.toUpperCase();
+    document.getElementById('sumServices').textContent = servicosSelecionados.toUpperCase();
+}
+
 
 function showSummary() {
     if (formInputs.serviceTypes.length === 0) {
