@@ -60,7 +60,7 @@ document.getElementById('licensePlate').addEventListener('input', function(e) {
 // Captura de inputs
 ['clientName', 'brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
     document.getElementById(id).addEventListener('input', function() {
-        let value = this.value;
+        let value = this.value.toUpperCase();
         if (['brand', 'model', 'displacement'].includes(id)) {
             value = value.toUpperCase();
             this.value = value;
