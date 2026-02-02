@@ -97,7 +97,7 @@ header {
     flex: 1;
     display: flex;
     justify-content: center;
-    padding-left: 40px; /* Compensa o botão de share para centralizar o logo */
+    padding-left: 60px; /* Compensa o botão de share para centralizar o logo */
 }
 
 .logo { height: 80px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
