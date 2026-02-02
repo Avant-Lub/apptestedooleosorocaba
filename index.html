@@ -15,9 +15,14 @@
 
     <header>
         <div class="header-content">
-            <div class="logo-wrapper">
-                <!-- Logo apontando para o repositório do GitHub -->
-                <img src="https://avant-lub.github.io/apptestedooleosorocaba/logo-do-oleo-sorocaba.png" alt="Do Óleo Sorocaba" class="logo">
+            <div class="header-top">
+                <div class="logo-wrapper">
+                    <img src="https://avant-lub.github.io/apptestedooleosorocaba/logo-do-oleo-sorocaba.png" alt="Do Óleo Sorocaba" class="logo">
+                </div>
+                <!-- Botão de Compartilhamento Restaurado -->
+                <button class="share-btn" onclick="shareApp()" title="Compartilhar App">
+                    <i class="fas fa-share-alt"></i>
+                </button>
             </div>
             <div class="header-title">Orçamento Rápido</div>
             <div class="header-badges">
@@ -69,6 +74,7 @@
             <div class="form-group">
                 <label for="licensePlate">Placa do Veículo</label>
                 <input type="text" id="licensePlate" placeholder="ABC-1234" maxlength="8" class="styled-input plate-input">
+                <div class="input-hint">Se informar a placa, os campos abaixo são opcionais.</div>
             </div>
             
             <div id="manualVehicleFields">

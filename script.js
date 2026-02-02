@@ -32,7 +32,7 @@ document.getElementById('clientPhone').addEventListener('input', function(e) {
     formInputs.clientPhone = formatted;
 });
 
-// Máscara de Placa
+// Máscara de Placa e Lógica de Desativação
 document.getElementById('licensePlate').addEventListener('input', function(e) {
     let value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (value.length > 7) value = value.slice(0, 7);
@@ -42,26 +42,32 @@ document.getElementById('licensePlate').addEventListener('input', function(e) {
     }
     this.value = value;
     formInputs.licensePlate = value;
+
+    // Se a placa tiver 7 caracteres (formato completo), desativa campos manuais
+    const isPlateComplete = value.replace('-', '').length === 7;
+    const manualFields = ['brand', 'model', 'displacement', 'yearManufacture', 'yearModel'];
+    
+    manualFields.forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = isPlateComplete;
+        if (isPlateComplete) {
+            el.value = ''; // Limpa o campo se estiver desativado
+            formInputs[id] = '';
+        }
+    });
 });
 
-// Captura de inputs com limites e conversão para maiúsculas
+// Captura de inputs
 ['clientName', 'brand', 'model', 'displacement', 'yearManufacture', 'yearModel'].forEach(id => {
     document.getElementById(id).addEventListener('input', function() {
         let value = this.value;
-        
-        // Limites de caracteres específicos
-        if (id === 'brand' || id === 'model') {
-            if (value.length > 30) value = value.slice(0, 30);
+        if (['brand', 'model', 'displacement'].includes(id)) {
             value = value.toUpperCase();
-        } else if (id === 'displacement') {
-            if (value.length > 8) value = value.slice(0, 8);
-            value = value.toUpperCase();
+            this.value = value;
         } else if (id === 'yearManufacture' || id === 'yearModel') {
-            value = value.replace(/\D/g, '');
-            if (value.length > 4) value = value.slice(0, 4);
+            value = value.replace(/\D/g, '').slice(0, 4);
+            this.value = value;
         }
-        
-        this.value = value;
         formInputs[id] = value;
     });
 });
@@ -76,7 +82,26 @@ function openExternal(url) {
     }
 }
 
+function shareApp() {
+    const shareData = {
+        title: 'Do Óleo Sorocaba - Orçamento Inteligente',
+        text: 'Solicite seu orçamento de troca de óleo e manutenção de forma rápida!',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData).catch(console.error);
+    } else {
+        // Fallback para copiar link
+        navigator.clipboard.writeText(window.location.href);
+        showToast("Link copiado para a área de transferência!");
+    }
+}
+
 function validateYears() {
+    const isPlateComplete = formInputs.licensePlate.replace('-', '').length === 7;
+    if (isPlateComplete) return true; // Ignora validação se tiver placa
+
     const fab = parseInt(formInputs.yearManufacture);
     const mod = parseInt(formInputs.yearModel);
     
@@ -92,9 +117,8 @@ function validateYears() {
 }
 
 function nextStep(step) {
-    // Validação Passo 2
     if (currentStep === 2) {
-        const hasPlate = formInputs.licensePlate && formInputs.licensePlate.length >= 7;
+        const hasPlate = formInputs.licensePlate.replace('-', '').length === 7;
         const hasManual = formInputs.brand && formInputs.model;
         
         if (!hasPlate && !hasManual) {
@@ -148,6 +172,38 @@ function showToast(msg) {
     setTimeout(() => t.style.display = 'none', 3000);
 }
 
+function resetApp() {
+    // Limpa o objeto de dados
+    Object.keys(formInputs).forEach(key => {
+        if (Array.isArray(formInputs[key])) formInputs[key] = [];
+        else if (key === 'oilType') formInputs[key] = 'Indique-me a melhor opção';
+        else formInputs[key] = '';
+    });
+
+    // Limpa todos os inputs da tela
+    document.querySelectorAll('input').forEach(input => {
+        input.value = '';
+        input.disabled = false;
+    });
+    document.querySelectorAll('select').forEach(select => {
+        select.selectedIndex = 0;
+    });
+    document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // Esconde seções condicionais
+    document.getElementById('brakeTypeSection').style.display = 'none';
+    document.getElementById('oilPreference').style.display = 'none';
+
+    // Volta para o passo 1
+    document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+    document.getElementById('step1').classList.add('active');
+    currentStep = 1;
+    updateProgress();
+    closeModal();
+}
+
 function showSummary() {
     if (formInputs.serviceTypes.length === 0) {
         showToast("Selecione ao menos um serviço.");
@@ -190,7 +246,7 @@ function sendWhatsApp() {
     msg += `📱 *WhatsApp:* ${formInputs.clientPhone || 'Não informado'}\n\n`;
     
     msg += `*VEÍCULO:*\n`;
-    if (formInputs.licensePlate) {
+    if (formInputs.licensePlate.replace('-', '').length === 7) {
         msg += `• Placa: ${formInputs.licensePlate}\n`;
     } else {
         msg += `• ${formInputs.brand} ${formInputs.model}\n`;
@@ -215,4 +271,7 @@ function sendWhatsApp() {
 
     const url = `https://wa.me/5515998473981?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
+
+    // Reinicia o app após um pequeno delay para garantir que o link abriu
+    setTimeout(resetApp, 1000);
 }
