@@ -107,6 +107,48 @@
     }
     </script>
 
+    <!-- Schema.org FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Qual o prazo para agendamento?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "O agendamento é feito conforme disponibilidade da agenda, normalmente dentro de 24 a 48 horas úteis após a confirmação do orçamento."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quais são as formas de pagamento?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Aceitamos cartões de crédito, débito, PIX, dinheiro e transferência bancária. Consulte-nos para condições especiais."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Oferecem garantia nos serviços?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim, todos os nossos serviços têm garantia. A duração varia conforme o tipo de serviço realizado."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Trabalham com peças originais?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim, trabalhamos com peças originais e de reposição de qualidade, sempre com a aprovação do cliente."
+          }
+        }
+      ]
+    }
+    </script>
+
     <meta name="theme-color" content="#1a3a52">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -485,6 +527,89 @@
             background-color: #1da851;
         }
 
+        /* NOVO: Botão FAQ */
+        .btn-faq {
+            background-color: var(--primary-light);
+            color: white;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            padding: 0.9rem;
+        }
+
+        .btn-faq:hover {
+            background-color: var(--primary);
+        }
+
+        /* NOVO: Seção FAQ */
+        .faq-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 0;
+            margin: 1rem 0 2rem 0;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.5s ease-out, padding 0.3s ease-out;
+        }
+
+        .faq-section.expanded {
+            max-height: 800px;
+            padding: 1.5rem;
+        }
+
+        .faq-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--primary);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 1.25rem;
+        }
+
+        .faq-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .faq-question i {
+            color: var(--accent);
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            flex-shrink: 0;
+        }
+
+        .faq-answer {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            padding-left: 1.25rem;
+        }
+
         .external-links { 
             display: flex; 
             gap: 0.5rem; 
@@ -678,6 +803,9 @@
                 font-size: 1.1rem;
                 letter-spacing: 2px;
             }
+            .faq-section.expanded {
+                padding: 1.25rem;
+            }
         }
 
         @media (max-width: 350px) {
@@ -851,6 +979,78 @@
             <div class="nav-buttons">
                 <button class="btn btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar</button>
                 <button class="btn btn-primary" onclick="showSummary()">Revisar <i class="fas fa-check" aria-hidden="true"></i></button>
+            </div>
+        </section>
+
+        <!-- NOVA SEÇÃO: Dúvidas Frequentes -->
+        <button class="btn btn-faq" onclick="toggleFaq()" id="faqButton" aria-expanded="false">
+            <i class="fas fa-question-circle" aria-hidden="true"></i> Dúvidas Frequentes
+            <i class="fas fa-chevron-down" aria-hidden="true" id="faqChevron" style="margin-left: auto;"></i>
+        </button>
+
+        <section class="faq-section" id="faqSection" aria-hidden="true">
+            <h2 class="faq-title">
+                <i class="fas fa-comments" aria-hidden="true"></i> Dúvidas Frequentes
+            </h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Qual o prazo para agendamento?
+                </div>
+                <div class="faq-answer">
+                    O agendamento é feito conforme disponibilidade da agenda, normalmente dentro de 24 a 48 horas úteis após a confirmação do orçamento. Para urgências, entre em contato diretamente pelo WhatsApp.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Quais são as formas de pagamento?
+                </div>
+                <div class="faq-answer">
+                    Aceitamos diversas formas de pagamento: cartões de crédito (todas as bandeiras), débito, PIX, dinheiro e transferência bancária. Consulte-nos para condições especiais ou parcelamento.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Oferecem garantia nos serviços?
+                </div>
+                <div class="faq-answer">
+                    Sim, todos os nossos serviços têm garantia. A duração varia conforme o tipo de serviço realizado: troca de óleo (90 dias), serviços de freios (60 dias), câmbio automático (30 dias). A garantia cobre mão de obra e peças.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Trabalham com peças originais?
+                </div>
+                <div class="faq-answer">
+                    Sim, trabalhamos com peças originais (OEM) e de reposição de qualidade equivalente, sempre com a aprovação prévia do cliente. Utilizamos apenas produtos de marcas reconhecidas no mercado.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Posso agendar fora do horário comercial?
+                </div>
+                <div class="faq-answer">
+                    Sim! Nosso app funciona 24 horas para solicitação de orçamentos. Para agendamentos fora do horário comercial, nossa equipe entrará em contato no próximo dia útil para confirmar a disponibilidade.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-question" aria-hidden="true"></i>
+                    Preciso levar o veículo para orçamento?
+                </div>
+                <div class="faq-answer">
+                    Não! Basta preencher este formulário que enviaremos um orçamento estimado via WhatsApp. Para serviços mais complexos, pode ser necessária uma vistoria no local, que agendaremos sem custo.
+                </div>
             </div>
         </section>
 
@@ -1099,6 +1299,41 @@
         document.getElementById('oilType').addEventListener('change', function() {
             formInputs.oilType = this.value;
         });
+
+        // NOVA FUNÇÃO: Alternar FAQ
+        function toggleFaq() {
+            const faqSection = document.getElementById('faqSection');
+            const faqButton = document.getElementById('faqButton');
+            const faqChevron = document.getElementById('faqChevron');
+            
+            const isExpanded = faqSection.classList.contains('expanded');
+            
+            if (isExpanded) {
+                // Fechar FAQ
+                faqSection.classList.remove('expanded');
+                faqChevron.classList.remove('fa-chevron-up');
+                faqChevron.classList.add('fa-chevron-down');
+                faqButton.setAttribute('aria-expanded', 'false');
+                faqSection.setAttribute('aria-hidden', 'true');
+                
+                // Scroll suave para o botão
+                setTimeout(() => {
+                    faqButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            } else {
+                // Abrir FAQ
+                faqSection.classList.add('expanded');
+                faqChevron.classList.remove('fa-chevron-down');
+                faqChevron.classList.add('fa-chevron-up');
+                faqButton.setAttribute('aria-expanded', 'true');
+                faqSection.setAttribute('aria-hidden', 'false');
+                
+                // Scroll suave para a seção expandida
+                setTimeout(() => {
+                    faqSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        }
 
         function openExternal(url) {
             if (confirm("Você está saindo para um site externo. Estes sites podem conter anúncios. Deseja continuar?")) {
@@ -1358,6 +1593,10 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && document.getElementById('modalOverlay').style.display === 'flex') {
                 closeModal();
+            }
+            // Fecha FAQ com ESC também
+            if (e.key === 'Escape' && document.getElementById('faqSection').classList.contains('expanded')) {
+                toggleFaq();
             }
         });
     </script>
